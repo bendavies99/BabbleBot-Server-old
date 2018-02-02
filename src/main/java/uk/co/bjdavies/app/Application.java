@@ -2,6 +2,7 @@ package uk.co.bjdavies.app;
 
 import uk.co.bjdavies.app.binding.BindingContainer;
 import uk.co.bjdavies.app.cli.commands.ExitCommand;
+import uk.co.bjdavies.app.cli.commands.TestCommand;
 import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.config.Config;
 import uk.co.bjdavies.app.config.ConfigFactory;
@@ -9,6 +10,8 @@ import uk.co.bjdavies.app.modules.AudioModule;
 import uk.co.bjdavies.app.modules.ModuleContainer;
 import uk.co.bjdavies.app.routing.RouteFactory;
 import uk.co.bjdavies.app.routing.RoutingContainer;
+import uk.co.bjdavies.app.services.DiscordClientService;
+import uk.co.bjdavies.app.services.DiscordMessageService;
 import uk.co.bjdavies.app.services.ServiceContainer;
 import uk.co.bjdavies.app.services.TerminalService;
 import uk.co.bjdavies.app.variables.GlobalVariables;
@@ -89,7 +92,7 @@ public class Application
      */
     private void createConfig()
     {
-        config = ConfigFactory.makeConfig("{}");
+        config = ConfigFactory.makeConfig("config.json");
     }
 
 
@@ -126,6 +129,8 @@ public class Application
     private void allAllServices()
     {
         serviceContainer.addService("terminal", new TerminalService());
+        serviceContainer.addService("discordClient", new DiscordClientService());
+        serviceContainer.addService("discordMessaging", new DiscordMessageService());
     }
 
 
@@ -135,6 +140,8 @@ public class Application
     private void bootServices()
     {
         serviceContainer.startService("terminal", this);
+        serviceContainer.startService("discordClient", this);
+        serviceContainer.startService("discordMessaging", this);
     }
 
 
@@ -163,6 +170,7 @@ public class Application
     {
         CommandDispatcher commandDispatcher = (CommandDispatcher) bindingContainer.getBinding("cmdDispatcher");
         commandDispatcher.addCommand(new ExitCommand());
+        commandDispatcher.addCommand(new TestCommand());
     }
 
 

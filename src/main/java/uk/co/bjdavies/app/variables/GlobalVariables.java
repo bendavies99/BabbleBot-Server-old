@@ -17,6 +17,9 @@ public class GlobalVariables
         This class is used to hold all the global variables that you can use when creating custom commands
      */
 
+    @Variable
+    public String testVar = "I am just a test variable!";
+
 
     /**
      * This allows you get a random GIF image say you want a !randomGIF command for example.
@@ -24,8 +27,8 @@ public class GlobalVariables
      * @return String
      */
     @Variable
-    public String getRandomGIF()
+    public String getRandomGIF(String msg)
     {
-        return "Test";
+        return "Test " + msg;
     }
 }

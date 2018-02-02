@@ -1,0 +1,15 @@
+{
+  "discord": {
+    "token": "https://discordapp.com/developers",
+    "commandPrefix": "!"
+  },
+  "system": {
+    "JWTTokenPassword": "Your Super secret password",
+    //https://passwordsgenerator.net/ <- Create one here it's my recomendation.
+    "debug": false
+    //use this if something doesn't work as you want it to and send the information to babblebothelp@bj-davies.co.uk. Alternatively drop me a message on discord (respond quicker!).
+  },
+  "modules": [
+    //For more information goto babblebot.bj-davies.co.uk/module/help *Currently Not Available.*
+  ]
+}

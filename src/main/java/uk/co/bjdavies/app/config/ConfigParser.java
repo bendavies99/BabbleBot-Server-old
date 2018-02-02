@@ -1,5 +1,9 @@
 package uk.co.bjdavies.app.config;
 
+import com.google.gson.Gson;
+
+import java.io.Reader;
+
 /**
  * BabbleBot, open-source Discord Bot
  * Licence: GPL V3
@@ -23,9 +27,17 @@ public class ConfigParser
      */
     public ConfigParser(String json)
     {
-        config = new Config()
-        {
-        };
+        config = new Gson().fromJson(json, Config.class);
+    }
+
+    /**
+     * This is where the config will get parsed.
+     *
+     * @param reader - The reader from which you wish to read the json from.
+     */
+    public ConfigParser(Reader reader)
+    {
+        config = new Gson().fromJson(reader, Config.class);
     }
 
 

@@ -1,6 +1,7 @@
 package uk.co.bjdavies.app.modules;
 
 import uk.co.bjdavies.app.annotations.CommandFunction;
+import uk.co.bjdavies.app.annotations.Variable;
 
 /**
  * BabbleBot, open-source Discord Bot
@@ -13,6 +14,9 @@ import uk.co.bjdavies.app.annotations.CommandFunction;
 
 public class AudioModule extends Module
 {
+    @Variable
+    private String currentlyPlaying = "I am playing nothing.";
+
     @Override
     public String getName()
     {
@@ -34,7 +38,6 @@ public class AudioModule extends Module
     @CommandFunction
     public void play()
     {
-
     }
 
 }

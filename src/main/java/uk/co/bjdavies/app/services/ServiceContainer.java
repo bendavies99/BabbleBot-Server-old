@@ -134,7 +134,7 @@ public class ServiceContainer
             Thread thread = startedThreads.get(name);
             try
             {
-                thread.join(1000);
+                thread.join(100);
             } catch (InterruptedException e)
             {
                 e.printStackTrace();

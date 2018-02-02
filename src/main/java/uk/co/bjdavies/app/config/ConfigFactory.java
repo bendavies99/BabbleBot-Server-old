@@ -1,5 +1,9 @@
 package uk.co.bjdavies.app.config;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
 /**
  * BabbleBot, open-source Discord Bot
  * Licence: GPL V3
@@ -20,6 +24,23 @@ public class ConfigFactory
      */
     public static Config makeConfig(String json)
     {
-        return new ConfigParser(json).getConfig();
+        if (json.equals("config.json"))
+        {
+            try
+            {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(json));
+                return new ConfigParser(bufferedReader).getConfig();
+            } catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+
+
+        } else
+        {
+            return new ConfigParser(json).getConfig();
+        }
+        System.out.println("An error occurred when trying to parse the config");
+        return null;
     }
 }

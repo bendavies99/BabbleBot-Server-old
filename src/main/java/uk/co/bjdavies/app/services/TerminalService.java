@@ -57,7 +57,7 @@ public class TerminalService implements Service
         CLIView cliView = new CLIView();
         cliController = new CLIController(cliView, application);
         isRunning = true;
-        cliView.display("Welcome To BabbleBot3.0 Server");
+        cliView.display("Welcome To BabbleBot3.0 Server : Running Version: " + application.getConfig().getSystemConfig().getServerVersion());
         cliView.display("Enter A Command: ");
         return true;
     }

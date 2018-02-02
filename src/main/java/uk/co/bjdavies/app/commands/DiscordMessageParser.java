@@ -9,14 +9,13 @@ import java.util.regex.Pattern;
  * BabbleBot, open-source Discord Bot
  * Licence: GPL V3
  * Author: Ben Davies
- * Class Name: TerminalParser.java
- * Compiled Class Name: TerminalParser.class
+ * Class Name: DiscordMessageParser.java
+ * Compiled Class Name: DiscordMessageParser.class
  * Date Created: 31/01/2018
  */
 
-public class TerminalMessageParser implements MessageParser
+public class DiscordMessageParser implements MessageParser
 {
-
     /**
      * This will parse the string inputted the by the user.
      *
@@ -26,7 +25,7 @@ public class TerminalMessageParser implements MessageParser
     @Override
     public CommandContext parseString(String message)
     {
-        return new CommandContext(parseCommandName(message), parseParams(message), parseValue(message), "Terminal");
+        return new CommandContext(parseCommandName(message), parseParams(message), parseValue(message), "Discord");
     }
 
 

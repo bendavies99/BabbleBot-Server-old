@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.bjdavies.app.Application;
 import uk.co.bjdavies.app.binding.Bindable;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
+import uk.co.bjdavies.app.variables.VariableParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +79,14 @@ public class CommandDispatcher implements Bindable
     }
 
 
+    /**
+     * This will execute the command that user has entered is valid.
+     *
+     * @param parser      - The way the message is interpreted.
+     * @param message     - This is the user's input or any other type of input.
+     * @param application - The application instance.
+     * @return String - The command's response
+     */
     public String execute(MessageParser parser, String message, Application application)
     {
         CommandContext commandContext = parser.parseString(message);
@@ -98,7 +107,7 @@ public class CommandDispatcher implements Bindable
                 boolean isValid = command[0].validateUsage(commandContext);
                 if (isValid)
                 {
-                    return command[0].run(application, commandContext);
+                    return new VariableParser(command[0].run(application, commandContext), application).toString();
                 } else
                 {
                     return command[0].getUsage();
