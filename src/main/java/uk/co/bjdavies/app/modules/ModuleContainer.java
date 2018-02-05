@@ -80,38 +80,41 @@ public class ModuleContainer
      * This will execute a module command that are placed in the modules the command has to be annotated with @CommandFunction
      * e.g. play()
      *
-     * @param moduleName    - The name of the module you want to execute from.
-     * @param moduleCommand - The function you want to run.
-     * @param args          - The parameters for the function.
+     * @param moduleCommandDefinition   - This is the set of data that will be used to run the command.
+     * @return Object
      */
-    public Object executeModuleCommand(String moduleName, String moduleCommand, Object... args)
+    public Object executeModuleCommand(ModuleCommandDefinition moduleCommandDefinition)
     {
+        String moduleName = moduleCommandDefinition.getModuleClass().getSimpleName();
         if (!doesModuleExist(moduleName))
         {
-            logger.error("The module name entered does not exist inside this container.", new BabbleBotException());
+            logger.error("The module name entered does not exist inside this container.", new BabbleBotException("executeModuleCommand()"));
         } else
         {
-            Class<? extends Module> moduleClass = getModule(moduleName).getClass();
+            Class<? extends Module> moduleClass = moduleCommandDefinition.getModuleClass();
             try
             {
-                Method method = moduleClass.getDeclaredMethod(moduleCommand);
+
+                Method method = moduleClass.getDeclaredMethod(moduleCommandDefinition.getName(), moduleCommandDefinition.getParameterTypes());
                 method.setAccessible(true);
+
 
                 if (method.isAnnotationPresent(CommandFunction.class))
                 {
-                    return method.invoke(getModule(moduleName), args);
+                    return method.invoke(getModule(moduleName), moduleCommandDefinition.getArgs());
                 }
 
             } catch (NoSuchMethodException e)
             {
-                logger.error("The module command entered does not exist inside this module.", new BabbleBotException());
+                logger.error("The module command entered does not exist inside this module.", new BabbleBotException("executeModuleCommand()"));
             } catch (InvocationTargetException | IllegalAccessException e)
             {
-                logger.error("The module command did not execute correctly.", new BabbleBotException());
+                logger.error("The module command did not execute correctly.", e);
             }
         }
         return null;
     }
+
 
 
     /**
@@ -124,7 +127,7 @@ public class ModuleContainer
     {
         if (!modules.containsKey(name))
         {
-            logger.error("The module name entered does not exist inside this container.", new BabbleBotException());
+            logger.error("The module name entered does not exist inside this container.", new BabbleBotException("getModule()"));
         } else
         {
             return modules.get(name);
@@ -141,7 +144,7 @@ public class ModuleContainer
      */
     public boolean doesModuleExist(String name)
     {
-        return modules.containsKey(name);
+        return modules.keySet().stream().filter(e -> e.toLowerCase().equals(name.toLowerCase())).findFirst().isPresent();
     }
 
     /**

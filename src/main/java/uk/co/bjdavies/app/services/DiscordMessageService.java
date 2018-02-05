@@ -1,6 +1,6 @@
 package uk.co.bjdavies.app.services;
 
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import uk.co.bjdavies.app.Application;
 import uk.co.bjdavies.app.binding.Bindable;
@@ -61,14 +61,22 @@ public class DiscordMessageService implements Service
     public void run()
     {
         discordClientFacade.addListener(event -> {
-            if (event instanceof MessageEvent)
+            if (event instanceof MessageReceivedEvent)
             {
-                String message = ((MessageEvent) event).getMessage().getContent();
-                IChannel channel = ((MessageEvent) event).getChannel();
+                String message = ((MessageReceivedEvent) event).getMessage().getFormattedContent();
+                IChannel channel = ((MessageReceivedEvent) event).getChannel();
                 if (message.startsWith(application.getConfig().getDiscordConfig().getCommandPrefix()))
                 {
+
+                    String response = commandDispatcher.execute(new DiscordMessageParser(((MessageReceivedEvent) event).getMessage()), message.replace(application.getConfig().getDiscordConfig().getCommandPrefix(), ""), application);
+
+                    if (response.isEmpty())
+                    {
+                        return;
+                    }
+
                     channel.sendMessage(
-                            commandDispatcher.execute(new DiscordMessageParser(), message.replace(application.getConfig().getDiscordConfig().getCommandPrefix(), ""), application)
+                            response
                     );
                 }
             }

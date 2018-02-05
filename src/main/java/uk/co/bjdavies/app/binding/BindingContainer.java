@@ -65,6 +65,16 @@ public class BindingContainer
         }
     }
 
+    /**
+     * This will determine id the binding container holds a binding.
+     *
+     * @param name - The name of the binding.
+     * @return boolean
+     */
+    public boolean hasBinding(String name)
+    {
+        return bindings.containsKey(name);
+    }
 
     /**
      * This is where you can attach listeners to a binded object.

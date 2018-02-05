@@ -89,13 +89,17 @@ public class CommandDispatcher implements Bindable
      */
     public String execute(MessageParser parser, String message, Application application)
     {
+
+        System.out.println("This got ran with the application code of " + application);
+        System.out.println(message);
+
         CommandContext commandContext = parser.parseString(message);
 
         if (commandContext != null)
         {
             final Command[] command = new Command[1];
             commands.stream().filter(e -> e.getType().toLowerCase().equals(commandContext.getType().toLowerCase())).forEach(e -> {
-                Optional<String> findCommand = Arrays.asList(e.getAliases()).stream().filter(alias -> alias.toLowerCase().equals(commandContext.getCommandName().toLowerCase())).findAny();
+                Optional<String> findCommand = Arrays.asList(e.getAliases()).stream().filter(alias -> alias.toLowerCase().equals(commandContext.getCommandName().toLowerCase())).findFirst();
                 if (findCommand.isPresent())
                 {
                     command[0] = e;

@@ -2,6 +2,7 @@ package uk.co.bjdavies.app.commands;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.obj.IMessage;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
 
 import java.util.Map;
@@ -47,6 +48,11 @@ public class CommandContext
      */
     private String type;
 
+    /**
+     * This is used for discord messages.
+     */
+    private IMessage message;
+
 
     /**
      * This is the CommandContext Constructor.
@@ -62,6 +68,25 @@ public class CommandContext
         this.parameters = parameters;
         this.value = value;
         this.type = type;
+    }
+
+
+    /**
+     * This is the CommandContext Constructor.
+     *
+     * @param commandName - The name of the command.
+     * @param parameters  - THe command's paramaters.
+     * @param value       - The value of the command (if any).
+     * @param type        - The type of the command.
+     * @param message     - IMessage of which was created when the message was sent.
+     */
+    public CommandContext(String commandName, Map<String, String> parameters, String value, String type, IMessage message)
+    {
+        this.commandName = commandName;
+        this.parameters = parameters;
+        this.value = value;
+        this.type = type;
+        this.message = message;
     }
 
 
@@ -124,5 +149,15 @@ public class CommandContext
     public String getType()
     {
         return type;
+    }
+
+    /**
+     * This will return the message object.
+     *
+     * @return IMessage
+     */
+    public IMessage getMessage()
+    {
+        return message;
     }
 }

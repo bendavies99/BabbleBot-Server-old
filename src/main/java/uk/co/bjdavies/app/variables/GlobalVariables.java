@@ -27,8 +27,8 @@ public class GlobalVariables
      * @return String
      */
     @Variable
-    public String getRandomGIF(String msg)
+    public String getRandomGIF()
     {
-        return "Test " + msg;
+        return "Test";
     }
 }

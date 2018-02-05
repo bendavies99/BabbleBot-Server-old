@@ -1,5 +1,7 @@
 package uk.co.bjdavies.app.commands;
 
+import sx.blah.discord.handle.obj.IMessage;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -16,6 +18,24 @@ import java.util.regex.Pattern;
 
 public class DiscordMessageParser implements MessageParser
 {
+
+
+    /**
+     * This is the message that was created when the message was sent.
+     */
+    private final IMessage message;
+
+    /**
+     * This will construct the class.
+     *
+     * @param message - The IMessage which was created when the message was sent.
+     */
+    public DiscordMessageParser(IMessage message)
+    {
+        this.message = message;
+    }
+
+
     /**
      * This will parse the string inputted the by the user.
      *
@@ -25,7 +45,7 @@ public class DiscordMessageParser implements MessageParser
     @Override
     public CommandContext parseString(String message)
     {
-        return new CommandContext(parseCommandName(message), parseParams(message), parseValue(message), "Discord");
+        return new CommandContext(parseCommandName(message), parseParams(message), parseValue(message), "Discord", this.message);
     }
 
 
@@ -97,7 +117,7 @@ public class DiscordMessageParser implements MessageParser
      */
     private Matcher getParameterMatcher(String message)
     {
-        String parameterRegex = "-([a-zA-Z0-9]+)=(([a-zA-Z0-9]+)|(\"([a-zA-Z0-9/]+)\"))";
+        String parameterRegex = "-([a-zA-Z0-9]+)=(([a-zA-Z0-9:/?=&_.]+)|(\"([a-zA-Z0-9:/?=&_.]+)\"))";
 
         Pattern pattern = Pattern.compile(parameterRegex);
 

@@ -1,12 +1,18 @@
 package uk.co.bjdavies.app;
 
+import ch.qos.logback.classic.LoggerContext;
+import org.slf4j.LoggerFactory;
+import org.xeustechnologies.jcl.JarClassLoader;
+import org.xeustechnologies.jcl.JclObjectFactory;
 import uk.co.bjdavies.app.binding.BindingContainer;
 import uk.co.bjdavies.app.cli.commands.ExitCommand;
 import uk.co.bjdavies.app.cli.commands.TestCommand;
 import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.config.Config;
 import uk.co.bjdavies.app.config.ConfigFactory;
-import uk.co.bjdavies.app.modules.AudioModule;
+import uk.co.bjdavies.app.config.ModuleConfig;
+import uk.co.bjdavies.app.exceptions.BabbleBotException;
+import uk.co.bjdavies.app.modules.Module;
 import uk.co.bjdavies.app.modules.ModuleContainer;
 import uk.co.bjdavies.app.routing.RouteFactory;
 import uk.co.bjdavies.app.routing.RoutingContainer;
@@ -16,6 +22,8 @@ import uk.co.bjdavies.app.services.ServiceContainer;
 import uk.co.bjdavies.app.services.TerminalService;
 import uk.co.bjdavies.app.variables.GlobalVariables;
 import uk.co.bjdavies.app.variables.VariableContainer;
+
+import java.util.Collection;
 
 /**
  * BabbleBot, open-source Discord Bot
@@ -76,14 +84,22 @@ public class Application
         variableContainer = new VariableContainer();
 
         createConfig();
+        bindDispatcher();
+        addAllServices();
         bootDiscordClient();
-        allAllServices();
-        addAllModules();
         addAllRoutes();
         addAllVariables();
-        bindDispatcher();
         addDefaultCommandsToDispatcher();
         bootServices();
+        addAllModules();
+    }
+
+    /**
+     * This will boot the discord client and make sure it is binded for all modules.
+     */
+    private void bootDiscordClient()
+    {
+        serviceContainer.addService("discordClient", new DiscordClientService());
     }
 
 
@@ -99,9 +115,47 @@ public class Application
     /**
      * This method will add all the modules to the module container and will be used later on in the program.
      */
-    private void addAllModules()
+    protected void addAllModules()
     {
-        moduleContainer.addModule("audioDJ", new AudioModule());
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        if (!config.getSystemConfig().isDebugOn()) context.stop();
+        Collection<ModuleConfig> moduleConfigs = config.getModules();
+        for (ModuleConfig moduleConfig : moduleConfigs)
+        {
+            JarClassLoader jcl = new JarClassLoader();
+            if (moduleConfig.getModuleLocation().contains(".jar"))
+                jcl.add(moduleConfig.getModuleLocation());
+            else
+                jcl.add(moduleConfig.getModuleLocation() + "/" + moduleConfig.getModuleLocation().split("/")[1] + ".jar");
+
+            JclObjectFactory factory = JclObjectFactory.getInstance();
+
+            Module module;
+            try
+            {
+                module = (Module) factory.create(jcl, moduleConfig.getModuleClassPath());
+            } catch (Exception e)
+            {
+                try
+                {
+                    module = (Module) factory.create(jcl, moduleConfig.getModuleClassPath(), this);
+                } catch (Exception e1)
+                {
+                    try
+                    {
+                        throw new BabbleBotException(e1.getMessage());
+                    } catch (BabbleBotException e2)
+                    {
+                        e1.printStackTrace();
+                        return;
+                    }
+                }
+            }
+
+            moduleContainer.addModule(module.getName(), module);
+        }
+
+        if (!config.getSystemConfig().isDebugOn()) context.start();
     }
 
 
@@ -126,10 +180,9 @@ public class Application
     /**
      * This method will load all the services that are needed into the services container.
      */
-    private void allAllServices()
+    private void addAllServices()
     {
         serviceContainer.addService("terminal", new TerminalService());
-        serviceContainer.addService("discordClient", new DiscordClientService());
         serviceContainer.addService("discordMessaging", new DiscordMessageService());
     }
 
@@ -142,15 +195,6 @@ public class Application
         serviceContainer.startService("terminal", this);
         serviceContainer.startService("discordClient", this);
         serviceContainer.startService("discordMessaging", this);
-    }
-
-
-    /**
-     * This method will boot the discord client so we can interact with discord.
-     */
-    private void bootDiscordClient()
-    {
-
     }
 
 

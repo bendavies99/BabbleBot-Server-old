@@ -37,6 +37,7 @@ public class DiscordClientFacade implements Bindable
      * This will init the class.
      *
      * @param token - The token that the client will run on.
+     * @param application - The application instance.
      */
     public DiscordClientFacade(String token, Application application)
     {
