@@ -90,9 +90,6 @@ public class CommandDispatcher implements Bindable
     public String execute(MessageParser parser, String message, Application application)
     {
 
-        System.out.println("This got ran with the application code of " + application);
-        System.out.println(message);
-
         CommandContext commandContext = parser.parseString(message);
 
         if (commandContext != null)

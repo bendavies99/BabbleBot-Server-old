@@ -7,7 +7,9 @@ import uk.co.bjdavies.app.binding.Bindable;
 import uk.co.bjdavies.app.binding.BindingEventListener;
 import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.commands.DiscordMessageParser;
-import uk.co.bjdavies.app.facades.DiscordClientFacade;
+import uk.co.bjdavies.app.db.models.Ignore;
+import uk.co.bjdavies.app.db.models.Models;
+import uk.co.bjdavies.app.discord.DiscordClientFacade;
 
 /**
  * BabbleBot, open-source Discord Bot
@@ -65,7 +67,7 @@ public class DiscordMessageService implements Service
             {
                 String message = ((MessageReceivedEvent) event).getMessage().getFormattedContent();
                 IChannel channel = ((MessageReceivedEvent) event).getChannel();
-                if (message.startsWith(application.getConfig().getDiscordConfig().getCommandPrefix()))
+                if (message.startsWith(application.getConfig().getDiscordConfig().getCommandPrefix()) && (Models.whereFirst(Ignore.class, application, "channelID", channel.getStringID()) == null || message.contains("listen")))
                 {
 
                     String response = commandDispatcher.execute(new DiscordMessageParser(((MessageReceivedEvent) event).getMessage()), message.replace(application.getConfig().getDiscordConfig().getCommandPrefix(), ""), application);

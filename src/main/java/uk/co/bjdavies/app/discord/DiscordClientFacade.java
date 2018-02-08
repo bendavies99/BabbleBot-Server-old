@@ -1,4 +1,4 @@
-package uk.co.bjdavies.app.facades;
+package uk.co.bjdavies.app.discord;
 
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;

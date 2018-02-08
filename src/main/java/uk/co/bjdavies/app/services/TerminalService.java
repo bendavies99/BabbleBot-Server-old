@@ -71,6 +71,7 @@ public class TerminalService implements Service
     public boolean shutdown()
     {
         isRunning = false;
+        scanner.close();
         scanner = null;
         return true;
     }

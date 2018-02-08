@@ -27,6 +27,11 @@ public class SystemConfig
      */
     private boolean debug;
 
+    /**
+     * This will be the location of the database that needs to store permanent data and settings for ex. Users.
+     */
+    private String DBLocation;
+
 
     /**
      * This will return the JWTTokenPassword.
@@ -56,5 +61,10 @@ public class SystemConfig
     public boolean isDebugOn()
     {
         return debug;
+    }
+
+    public String getDBLocation()
+    {
+        return DBLocation;
     }
 }

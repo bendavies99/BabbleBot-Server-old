@@ -6,11 +6,13 @@ import org.xeustechnologies.jcl.JarClassLoader;
 import org.xeustechnologies.jcl.JclObjectFactory;
 import uk.co.bjdavies.app.binding.BindingContainer;
 import uk.co.bjdavies.app.cli.commands.ExitCommand;
-import uk.co.bjdavies.app.cli.commands.TestCommand;
 import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.config.Config;
 import uk.co.bjdavies.app.config.ConfigFactory;
 import uk.co.bjdavies.app.config.ModuleConfig;
+import uk.co.bjdavies.app.db.DB;
+import uk.co.bjdavies.app.discord.commands.IgnoreCommand;
+import uk.co.bjdavies.app.discord.commands.ListenCommand;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
 import uk.co.bjdavies.app.modules.Module;
 import uk.co.bjdavies.app.modules.ModuleContainer;
@@ -92,6 +94,15 @@ public class Application
         addDefaultCommandsToDispatcher();
         bootServices();
         addAllModules();
+        try
+        {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+        System.out.println(DB.table("ignores", this).get());
     }
 
     /**
@@ -214,7 +225,8 @@ public class Application
     {
         CommandDispatcher commandDispatcher = (CommandDispatcher) bindingContainer.getBinding("cmdDispatcher");
         commandDispatcher.addCommand(new ExitCommand());
-        commandDispatcher.addCommand(new TestCommand());
+        commandDispatcher.addCommand(new IgnoreCommand());
+        commandDispatcher.addCommand(new ListenCommand());
     }
 
 

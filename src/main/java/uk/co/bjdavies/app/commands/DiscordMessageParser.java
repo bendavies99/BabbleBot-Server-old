@@ -45,7 +45,7 @@ public class DiscordMessageParser implements MessageParser
     @Override
     public CommandContext parseString(String message)
     {
-        return new CommandContext(parseCommandName(message), parseParams(message), parseValue(message), "Discord", this.message);
+        return new CommandContext(parseCommandName(message).toLowerCase(), parseParams(message), parseValue(message), "Discord", this.message);
     }
 
 

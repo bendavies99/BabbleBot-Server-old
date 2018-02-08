@@ -2,7 +2,7 @@ package uk.co.bjdavies.app.services;
 
 import sx.blah.discord.util.DiscordException;
 import uk.co.bjdavies.app.Application;
-import uk.co.bjdavies.app.facades.DiscordClientFacade;
+import uk.co.bjdavies.app.discord.DiscordClientFacade;
 
 /**
  * BabbleBot, open-source Discord Bot
