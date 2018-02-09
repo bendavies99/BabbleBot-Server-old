@@ -147,6 +147,23 @@ public class DB
                     sql = builder.build();
                     DB.sql(sql, application);
 
+                    builder = new TableBuilder("remember_tokens", new Blueprint()
+                    {
+                        @Override
+                        public void setup()
+                        {
+                            this.increments("id");
+                            this.integer("userId");
+                            this.string("token", 255);
+
+                            this.primaryKey("id");
+                            this.uniqueKeys("userId");
+                        }
+                    });
+
+                    sql = builder.build();
+                    DB.sql(sql, application);
+
                 }
             } catch (IOException e)
             {
@@ -213,7 +230,7 @@ public class DB
                 preparedStatement.close();
             }
 
-            connection.close();
+            if (connection != null) connection.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -492,7 +509,7 @@ public class DB
         bindAttribs.put(random, value);
         if (whereCount > 0)
         {
-            queryString = queryString + " OR " + statement;
+            queryString = queryString + " AND " + statement;
         } else
         {
             whereStatement = "WHERE " + statement;

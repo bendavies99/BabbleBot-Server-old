@@ -3,7 +3,6 @@ package uk.co.bjdavies.app.routing;
 
 import uk.co.bjdavies.app.Application;
 
-import java.util.function.Consumer;
 
 /**
  * BabbleBot, open-source Discord Bot
@@ -21,12 +20,12 @@ public class RouteFactory
      * This is the factory method to create a GET route.
      *
      * @param name  - the url of the route.
-     * @param onRun - the function that will get ran when the route is called.
-     * @return Route
+     * @param closure - the function that will get ran when the route is called.
+     * @return RouteMethod
      */
-    public static Route makeGetRoute(String name, Consumer<Application> onRun)
+    public static Route makeGetRoute(String name, RouteClosure closure)
     {
-        return makeRoute(name, RequestMethod.GET, onRun);
+        return makeRoute(name, RequestMethod.GET, closure);
     }
 
 
@@ -34,12 +33,12 @@ public class RouteFactory
      * This is the factory method to create a POST route.
      *
      * @param name  - the url of the route.
-     * @param onRun - the function that will get ran when the route is called.
-     * @return Route
+     * @param closure - the function that will get ran when the route is called.
+     * @return RouteMethod
      */
-    public static Route makePostRoute(String name, Consumer<Application> onRun)
+    public static Route makePostRoute(String name, RouteClosure closure)
     {
-        return makeRoute(name, RequestMethod.POST, onRun);
+        return makeRoute(name, RequestMethod.POST, closure);
     }
 
 
@@ -47,12 +46,12 @@ public class RouteFactory
      * This is the factory method to create a PUT route.
      *
      * @param name  - the url of the route.
-     * @param onRun - the function that will get ran when the route is called.
-     * @return Route
+     * @param closure - the function that will get ran when the route is called.
+     * @return RouteMethod
      */
-    public static Route makePutRoute(String name, Consumer<Application> onRun)
+    public static Route makePutRoute(String name, RouteClosure closure)
     {
-        return makeRoute(name, RequestMethod.PUT, onRun);
+        return makeRoute(name, RequestMethod.PUT, closure);
     }
 
 
@@ -60,12 +59,12 @@ public class RouteFactory
      * This is the factory method to create a PATCH route.
      *
      * @param name  - the url of the route.
-     * @param onRun - the function that will get ran when the route is called.
-     * @return Route
+     * @param closure - the function that will get ran when the route is called.
+     * @return RouteMethod
      */
-    public static Route makePatchRoute(String name, Consumer<Application> onRun)
+    public static Route makePatchRoute(String name, RouteClosure closure)
     {
-        return makeRoute(name, RequestMethod.PATCH, onRun);
+        return makeRoute(name, RequestMethod.PATCH, closure);
     }
 
 
@@ -73,12 +72,12 @@ public class RouteFactory
      * This is the factory method to create a DELETE route.
      *
      * @param name  - the url of the route.
-     * @param onRun - the function that will get ran when the route is called.
-     * @return Route
+     * @param closure - the function that will get ran when the route is called.
+     * @return RouteMethod
      */
-    public static Route makeDeleteRoute(String name, Consumer<Application> onRun)
+    public static Route makeDeleteRoute(String name, RouteClosure closure)
     {
-        return makeRoute(name, RequestMethod.DELETE, onRun);
+        return makeRoute(name, RequestMethod.DELETE, closure);
     }
 
 
@@ -87,10 +86,10 @@ public class RouteFactory
      *
      * @param name   - the name of the route which is the url of the route.
      * @param method - the request method that route will work on.
-     * @param onRun  - the function that will get run when the route has ran.
-     * @return Route
+     * @param closure  - the function that will get run when the route has ran.
+     * @return RouteMethod
      */
-    private static Route makeRoute(String name, RequestMethod method, Consumer<Application> onRun)
+    public static Route makeRoute(String name, RequestMethod method, RouteClosure closure)
     {
         return new Route()
         {
@@ -107,9 +106,9 @@ public class RouteFactory
             }
 
             @Override
-            public void onRun(Application application)
+            public Response onRun(Application application, RequestBag context)
             {
-                onRun.accept(application);
+                return closure.handle(application, context);
             }
         };
     }

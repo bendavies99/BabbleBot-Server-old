@@ -10,18 +10,14 @@ import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.config.Config;
 import uk.co.bjdavies.app.config.ConfigFactory;
 import uk.co.bjdavies.app.config.ModuleConfig;
-import uk.co.bjdavies.app.db.DB;
 import uk.co.bjdavies.app.discord.commands.IgnoreCommand;
 import uk.co.bjdavies.app.discord.commands.ListenCommand;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
 import uk.co.bjdavies.app.modules.Module;
 import uk.co.bjdavies.app.modules.ModuleContainer;
-import uk.co.bjdavies.app.routing.RouteFactory;
+import uk.co.bjdavies.app.routing.Routes;
 import uk.co.bjdavies.app.routing.RoutingContainer;
-import uk.co.bjdavies.app.services.DiscordClientService;
-import uk.co.bjdavies.app.services.DiscordMessageService;
-import uk.co.bjdavies.app.services.ServiceContainer;
-import uk.co.bjdavies.app.services.TerminalService;
+import uk.co.bjdavies.app.services.*;
 import uk.co.bjdavies.app.variables.GlobalVariables;
 import uk.co.bjdavies.app.variables.VariableContainer;
 
@@ -102,7 +98,6 @@ public class Application
             e.printStackTrace();
         }
 
-        System.out.println(DB.table("ignores", this).get());
     }
 
     /**
@@ -175,7 +170,7 @@ public class Application
      */
     private void addAllRoutes()
     {
-        routingContainer.addRoute(RouteFactory.makeGetRoute("/test", e -> System.out.println("Test")));
+        routingContainer.addRoutes(Routes.class);
     }
 
 
@@ -195,6 +190,9 @@ public class Application
     {
         serviceContainer.addService("terminal", new TerminalService());
         serviceContainer.addService("discordMessaging", new DiscordMessageService());
+        serviceContainer.addService("authService", new AuthService());
+        serviceContainer.addService("jwtService", new JWTTokenService());
+        serviceContainer.addService("routingService", new RoutingService());
     }
 
 
@@ -206,6 +204,9 @@ public class Application
         serviceContainer.startService("terminal", this);
         serviceContainer.startService("discordClient", this);
         serviceContainer.startService("discordMessaging", this);
+        serviceContainer.startService("authService", this);
+        serviceContainer.startService("jwtService", this);
+        serviceContainer.startService("routingService", this);
     }
 
 
@@ -299,4 +300,6 @@ public class Application
     {
         serviceContainer.stopAllServices();
     }
+
+
 }
