@@ -10,6 +10,7 @@ import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.config.Config;
 import uk.co.bjdavies.app.config.ConfigFactory;
 import uk.co.bjdavies.app.config.ModuleConfig;
+import uk.co.bjdavies.app.discord.commands.HelpCommand;
 import uk.co.bjdavies.app.discord.commands.IgnoreCommand;
 import uk.co.bjdavies.app.discord.commands.ListenCommand;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
@@ -77,7 +78,7 @@ public class Application
     {
         bindingContainer = new BindingContainer();
         serviceContainer = new ServiceContainer();
-        moduleContainer = new ModuleContainer();
+        moduleContainer = new ModuleContainer(this);
         routingContainer = new RoutingContainer();
         variableContainer = new VariableContainer();
 
@@ -228,6 +229,7 @@ public class Application
         commandDispatcher.addCommand(new ExitCommand());
         commandDispatcher.addCommand(new IgnoreCommand());
         commandDispatcher.addCommand(new ListenCommand());
+        commandDispatcher.addCommand(new HelpCommand());
     }
 
 

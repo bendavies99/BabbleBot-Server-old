@@ -2,11 +2,17 @@ package uk.co.bjdavies.app.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.bjdavies.app.Application;
 import uk.co.bjdavies.app.annotations.CommandFunction;
+import uk.co.bjdavies.app.annotations.ModuleFunction;
+import uk.co.bjdavies.app.commands.Command;
+import uk.co.bjdavies.app.commands.CommandContext;
+import uk.co.bjdavies.app.commands.CommandDispatcher;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,12 +37,18 @@ public class ModuleContainer
      */
     private Map<String, Module> modules;
 
+    /**
+     * The application instance
+     */
+    private Application application;
 
     /**
      * This will init the Map using a HashMap as the concrete version of Map.
+     * @param application - The application instance.
      */
-    public ModuleContainer()
+    public ModuleContainer(Application application)
     {
+        this.application = application;
         modules = new HashMap<>();
     }
 
@@ -54,7 +66,73 @@ public class ModuleContainer
             logger.error("The key or module is already in the container", new BabbleBotException());
         } else
         {
+            addCommandsFromModule(module);
             modules.put(name, module);
+        }
+    }
+
+    private void addCommandsFromModule(Module module)
+    {
+        for (final Method method : module.getClass().getDeclaredMethods())
+        {
+            if (method.isAnnotationPresent(CommandFunction.class))
+            {
+                if (Arrays.asList(method.getParameterTypes()).contains(CommandContext.class) && method.getParameterTypes().length == 1)
+                {
+                    CommandFunction commandFunction = method.getAnnotation(CommandFunction.class);
+                    CommandDispatcher commandDispatcher = (CommandDispatcher) application.getBindingContainer().getBinding("cmdDispatcher");
+                    commandDispatcher.addCommand(new Command()
+                    {
+                        @Override
+                        public String[] getAliases()
+                        {
+                            return commandFunction.aliases();
+                        }
+
+                        @Override
+                        public String getDescription()
+                        {
+                            return commandFunction.description();
+                        }
+
+                        @Override
+                        public String getUsage()
+                        {
+                            return commandFunction.usage();
+                        }
+
+                        @Override
+                        public String getType()
+                        {
+                            return commandFunction.type();
+                        }
+
+                        @Override
+                        public String run(Application application, CommandContext commandContext)
+                        {
+                            return (String) executeModuleCommand(new ModuleCommandExecutionBuilder(method.getName(), module.getClass()).setParameterTypes(CommandContext.class).setArgs(commandContext).build());
+                        }
+
+                        @Override
+                        public boolean validateUsage(CommandContext commandContext)
+                        {
+                            boolean[] isValid = new boolean[]{true};
+
+                            Arrays.asList(commandFunction.requiredParams()).stream().forEach(e -> {
+                                if (!commandContext.hasParameter(e) && !e.isEmpty())
+                                {
+                                    isValid[0] = false;
+                                }
+                            });
+
+                            return isValid[0];
+                        }
+                    });
+                } else
+                {
+                    logger.error("Error a CommandFunction can only have a CommandContext as the parameter. Please fix or your CommandFunction will not work.", new BabbleBotException("Method: " + method.getName()));
+                }
+            }
         }
     }
 
@@ -99,7 +177,7 @@ public class ModuleContainer
                 method.setAccessible(true);
 
 
-                if (method.isAnnotationPresent(CommandFunction.class))
+                if (method.isAnnotationPresent(CommandFunction.class) || method.isAnnotationPresent(ModuleFunction.class))
                 {
                     return method.invoke(getModule(moduleName), moduleCommandDefinition.getArgs());
                 }

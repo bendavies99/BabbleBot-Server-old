@@ -18,4 +18,40 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandFunction
 {
+    /**
+     * The aliases of the command.
+     *
+     * @return String[]
+     */
+    String[] aliases();
+
+
+    /**
+     * The Description for the command.
+     *
+     * @return String
+     */
+    String description();
+
+    /**
+     * The Usage for the command.
+     *
+     * @return String
+     */
+    String usage();
+
+
+    /**
+     * The type of command (Terminal, Discord).
+     *
+     * @return String
+     */
+    String type() default "Discord";
+
+    /**
+     * A list of required params for the command.
+     *
+     * @return String[]
+     */
+    String[] requiredParams() default "";
 }

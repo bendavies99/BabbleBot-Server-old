@@ -498,7 +498,7 @@ public class DB
      * This will add a where clause to your query.
      *
      * @param key      - The column name.
-     * @param operator - The type of operator (=,<,>,like)
+     * @param operator - The type of operator.
      * @param value    - The value that your looking for.
      * @return DB
      */

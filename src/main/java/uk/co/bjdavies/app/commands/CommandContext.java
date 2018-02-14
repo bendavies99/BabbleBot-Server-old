@@ -115,7 +115,19 @@ public class CommandContext
      * @param name - This is the name of the paramater.
      * @return boolean
      */
+    @Deprecated
     public boolean hasParamater(String name)
+    {
+        return parameters.containsKey(name);
+    }
+
+    /**
+     * This checks whether a parameter is present.
+     *
+     * @param name - This is the name of the paramater.
+     * @return boolean
+     */
+    public boolean hasParameter(String name)
     {
         return parameters.containsKey(name);
     }

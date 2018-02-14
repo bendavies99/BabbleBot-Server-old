@@ -16,7 +16,7 @@ public interface Command
     /**
      * The aliases of the command.
      *
-     * @return String
+     * @return String[]
      */
     String[] getAliases();
 

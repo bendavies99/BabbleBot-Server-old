@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * BabbleBot, open-source Discord Bot
@@ -78,6 +79,18 @@ public class CommandDispatcher implements Bindable
 
     }
 
+    /**
+     * This will try and return a command based on a name and type of command.
+     *
+     * @param alias - The alias of command.
+     * @param type  - The type of command.
+     * @return Optional
+     */
+    public Optional<Command> getCommandByAlias(String alias, String type)
+    {
+        return commands.stream().filter(e -> Arrays.asList(e.getAliases()).contains(alias) && e.getType().equals(type)).findAny();
+    }
+
 
     /**
      * This will execute the command that user has entered is valid.
@@ -95,7 +108,7 @@ public class CommandDispatcher implements Bindable
         if (commandContext != null)
         {
             final Command[] command = new Command[1];
-            commands.stream().filter(e -> e.getType().toLowerCase().equals(commandContext.getType().toLowerCase())).forEach(e -> {
+            commands.stream().filter(e -> checkType(e.getType(), commandContext.getType())).forEach(e -> {
                 Optional<String> findCommand = Arrays.asList(e.getAliases()).stream().filter(alias -> alias.toLowerCase().equals(commandContext.getCommandName().toLowerCase())).findFirst();
                 if (findCommand.isPresent())
                 {
@@ -125,4 +138,50 @@ public class CommandDispatcher implements Bindable
 
     }
 
+
+    /**
+     * This will check of the command against the command context.
+     *
+     * @param commandType - The type of the command.
+     * @param contextType - The command context.
+     * @return boolean
+     */
+    private boolean checkType(String commandType, String contextType)
+    {
+        if (commandType.equals("All"))
+        {
+            return true;
+        } else if (commandType.toLowerCase().equals(contextType.toLowerCase()))
+        {
+            return true;
+        } else if (commandType.contains("|"))
+        {
+            String[] types = commandType.split("|");
+            boolean foundType = false;
+
+            for (String type : types)
+            {
+                if (type.toLowerCase().equals(contextType.toLowerCase()))
+                {
+                    foundType = true;
+                }
+            }
+
+            return foundType;
+        }
+
+
+        return false;
+    }
+
+    /**
+     * This will return the list of commands in the dispatcher.
+     *
+     * @param type - THe type of command.
+     * @return List
+     */
+    public List<Command> getCommands(String type)
+    {
+        return commands.stream().filter(e -> e.getType().equals(type)).collect(Collectors.toList());
+    }
 }

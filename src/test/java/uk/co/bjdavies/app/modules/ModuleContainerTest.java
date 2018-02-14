@@ -21,7 +21,7 @@ public class ModuleContainerTest
     @org.junit.Before
     public void setUp() throws Exception
     {
-        container = new ModuleContainer();
+        container = new ModuleContainer(null);
         module = new Module()
         {
             @Override

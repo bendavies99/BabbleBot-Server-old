@@ -60,7 +60,7 @@ public class RouteHandler implements HttpHandler
      * This will handle the request that has been made to the server.
      *
      * @param httpExchange - The details of the request and method to respond.
-     * @throws IOException
+     * @throws IOException - if a io error occurs.
      */
     @Override
     public void handle(HttpExchange httpExchange) throws IOException

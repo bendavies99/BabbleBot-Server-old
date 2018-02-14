@@ -60,7 +60,7 @@ public class DiscordClientFacade implements Bindable
         {
             if (readyEvent instanceof ReadyEvent)
             {
-                client.changePlayingText("Bot In Development Mode");
+                client.changePlayingText(" 2018 | Author: Ben Davies | " + application.getConfig().getDiscordConfig().getCommandPrefix() + "help");
             }
         });
 
