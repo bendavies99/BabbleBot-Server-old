@@ -1,7 +1,8 @@
 package uk.co.bjdavies.app.services;
 
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import reactor.core.publisher.Mono;
 import uk.co.bjdavies.app.Application;
 import uk.co.bjdavies.app.binding.Bindable;
 import uk.co.bjdavies.app.binding.BindingEventListener;
@@ -10,6 +11,8 @@ import uk.co.bjdavies.app.commands.DiscordMessageParser;
 import uk.co.bjdavies.app.db.models.Ignore;
 import uk.co.bjdavies.app.db.models.Models;
 import uk.co.bjdavies.app.discord.DiscordClientFacade;
+
+import java.util.Objects;
 
 /**
  * BabbleBot, open-source Discord Bot
@@ -55,32 +58,22 @@ public class DiscordMessageService implements Service
     @Override
     public boolean shutdown()
     {
-        discordClientFacade.removeListener(this.getClass());
         return false;
     }
 
     @Override
     public void run()
     {
-        discordClientFacade.addListener(event -> {
-            if (event instanceof MessageReceivedEvent)
-            {
-                String message = ((MessageReceivedEvent) event).getMessage().getFormattedContent();
-                IChannel channel = ((MessageReceivedEvent) event).getChannel();
-                if (message.startsWith(application.getConfig().getDiscordConfig().getCommandPrefix()) && (Models.whereFirst(Ignore.class, application, "channelID", channel.getStringID()) == null || message.contains("listen")))
-                {
+        discordClientFacade.addListener(MessageCreateEvent.class).subscribe(event -> {
+            String message = event.getMessage().getContent().isPresent() ? event.getMessage().getContent().get() : "";
+            Mono<MessageChannel> channel = event.getMessage().getChannel();
+            if(message.startsWith(application.getConfig().getDiscordConfig().getCommandPrefix()) && (Models.whereFirst(Ignore.class, application, "channelID", event.getMessage().getChannelId().asString()) == null || message.contains("listen"))) {
+                String response = commandDispatcher.execute(new DiscordMessageParser(event.getMessage()), message.replace(application.getConfig().getDiscordConfig().getCommandPrefix(), ""), application);
 
-                    String response = commandDispatcher.execute(new DiscordMessageParser(((MessageReceivedEvent) event).getMessage()), message.replace(application.getConfig().getDiscordConfig().getCommandPrefix(), ""), application);
-
-                    if (response.isEmpty())
-                    {
-                        return;
-                    }
-
-                    channel.sendMessage(
-                            response
-                    );
+                if(response.isEmpty()){
+                    return;
                 }
+                Objects.requireNonNull(channel.block()).createMessage(response).block();
             }
         });
     }

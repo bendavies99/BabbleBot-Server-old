@@ -1,6 +1,6 @@
 package uk.co.bjdavies.app.commands;
 
-import sx.blah.discord.handle.obj.IMessage;
+import discord4j.core.object.entity.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,14 +23,14 @@ public class DiscordMessageParser implements MessageParser
     /**
      * This is the message that was created when the message was sent.
      */
-    private final IMessage message;
+    private final Message message;
 
     /**
      * This will construct the class.
      *
      * @param message - The IMessage which was created when the message was sent.
      */
-    public DiscordMessageParser(IMessage message)
+    public DiscordMessageParser(Message message)
     {
         this.message = message;
     }

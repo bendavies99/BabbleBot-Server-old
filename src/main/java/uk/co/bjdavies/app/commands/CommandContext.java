@@ -1,8 +1,8 @@
 package uk.co.bjdavies.app.commands;
 
+import discord4j.core.object.entity.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.obj.IMessage;
 import uk.co.bjdavies.app.exceptions.BabbleBotException;
 
 import java.util.Map;
@@ -51,7 +51,7 @@ public class CommandContext
     /**
      * This is used for discord messages.
      */
-    private IMessage message;
+    private Message message;
 
 
     /**
@@ -80,7 +80,7 @@ public class CommandContext
      * @param type        - The type of the command.
      * @param message     - IMessage of which was created when the message was sent.
      */
-    public CommandContext(String commandName, Map<String, String> parameters, String value, String type, IMessage message)
+    public CommandContext(String commandName, Map<String, String> parameters, String value, String type, Message message)
     {
         this.commandName = commandName;
         this.parameters = parameters;
@@ -168,7 +168,7 @@ public class CommandContext
      *
      * @return IMessage
      */
-    public IMessage getMessage()
+    public Message getMessage()
     {
         return message;
     }

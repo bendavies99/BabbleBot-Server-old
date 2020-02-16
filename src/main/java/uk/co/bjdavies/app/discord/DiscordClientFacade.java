@@ -1,11 +1,12 @@
 package uk.co.bjdavies.app.discord;
 
 import ch.qos.logback.classic.LoggerContext;
+import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.domain.Event;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
+import reactor.core.publisher.Flux;
 import uk.co.bjdavies.app.Application;
 import uk.co.bjdavies.app.binding.Bindable;
 
@@ -24,7 +25,7 @@ public class DiscordClientFacade implements Bindable
     /**
      * This is the client that all the discord action will be ran on.
      */
-    private IDiscordClient client;
+    private DiscordClient client;
 
 
     /**
@@ -44,7 +45,7 @@ public class DiscordClientFacade implements Bindable
         this.application = application;
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         if (!application.getConfig().getSystemConfig().isDebugOn()) context.stop();
-        client = new ClientBuilder().withToken(token).build();
+        client = new DiscordClientBuilder(token).build();
         if (!application.getConfig().getSystemConfig().isDebugOn()) context.start();
     }
 
@@ -56,15 +57,9 @@ public class DiscordClientFacade implements Bindable
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         if (!application.getConfig().getSystemConfig().isDebugOn()) context.stop();
 
-        addListener(readyEvent ->
-        {
-            if (readyEvent instanceof ReadyEvent)
-            {
-                client.changePlayingText(" 2018 | Author: Ben Davies | " + application.getConfig().getDiscordConfig().getCommandPrefix() + "help");
-            }
-        });
+        addListener(ReadyEvent.class).subscribe(ready -> { System.out.println("Playing Text is Different Now!"); });
 
-        client.login();
+        client.login().block();
         if (!application.getConfig().getSystemConfig().isDebugOn()) context.start();
 
     }
@@ -83,41 +78,12 @@ public class DiscordClientFacade implements Bindable
     /**
      * This will register a listener to the event dispatcher.
      *
-     * @param listener - THe listener you want to attach
+     * @param
+     * @param event - the listener to you want to attach.
      */
-    public void addListener(IListener listener)
+     public <E extends Event>Flux<E> addListener(Class<E> event)
     {
-        client.getDispatcher().registerListener(listener);
-    }
-
-    /**
-     * This will unregister a listener from the event dispatcher.
-     *
-     * @param listener - THe listener you want to de-attach
-     */
-    public void removeListener(IListener listener)
-    {
-        client.getDispatcher().unregisterListener(listener);
-    }
-
-    /**
-     * This will register a listener to the event dispatcher.
-     *
-     * @param listener - THe listener you want to attach
-     */
-    public void addListener(Class<?> listener)
-    {
-        client.getDispatcher().registerListener(listener);
-    }
-
-    /**
-     * This will unregister a listener from the event dispatcher.
-     *
-     * @param listener - THe listener you want to de-attach
-     */
-    public void removeListener(Class<?> listener)
-    {
-        client.getDispatcher().unregisterListener(listener);
+        return client.getEventDispatcher().on(event);
     }
 
 }

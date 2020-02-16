@@ -54,7 +54,7 @@ public class RoutingService implements Service
     {
         try
         {
-            httpServer = HttpServer.create(new InetSocketAddress(80), 30);
+            httpServer = HttpServer.create(new InetSocketAddress(8010), 30);
 
             List<Middleware> middleware = new ArrayList<>();
             middleware.add(new VerifyJWTTokenMiddleware());

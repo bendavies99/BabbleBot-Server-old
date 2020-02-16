@@ -7,6 +7,7 @@ import uk.co.bjdavies.app.commands.CommandDispatcher;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -62,7 +63,7 @@ public class HelpCommand implements Command
 
             if (commandContext.getType().equals("Discord"))
             {
-                commandContext.getMessage().getAuthor().getOrCreatePMChannel().sendMessage("List of all commands: use !help {command} for more\n" + sb.toString());
+                Objects.requireNonNull(commandContext.getMessage().getAuthor().get().getPrivateChannel().block()).createMessage("List of all commands: use !help {command} for more\n" + sb.toString()).block();
                 return "Check your DMs I would have sent you a message :)";
             } else
             {

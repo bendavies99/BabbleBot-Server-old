@@ -222,7 +222,7 @@ public class ModuleContainer
      */
     public boolean doesModuleExist(String name)
     {
-        return modules.keySet().stream().filter(e -> e.toLowerCase().equals(name.toLowerCase())).findFirst().isPresent();
+        return modules.keySet().stream().anyMatch(e -> e.toLowerCase().equals(name.toLowerCase()));
     }
 
     /**

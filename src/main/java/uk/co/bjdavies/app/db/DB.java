@@ -36,7 +36,7 @@ public class DB
     /**
      * This is the logger implementation for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(DB.class);
+    private final Logger logger = LoggerFactory.getLogger(DB.class);
     /**
      * This will determine the table that gets edited.
      */
@@ -56,7 +56,7 @@ public class DB
     /**
      * This will hold attribs that will be processed at execution.
      */
-    private Map<String, String> bindAttribs = new HashMap<>();
+    private final Map<String, String> bindAttribs = new HashMap<>();
     /**
      * This is how many where statements are in the query.
      */
@@ -207,6 +207,7 @@ public class DB
      * @param application - The application instance.
      * @return DB
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static DB sql(String sql, Application application)
     {
 
@@ -255,7 +256,7 @@ public class DB
                 preparedStatement.execute(toExecute);
 
                 if (!toExecute.contains("CREATE TABLE"))
-                    resultSet = preparedStatement.executeQuery("SELECT * FROM " + tableName);
+                    resultSet = preparedStatement.executeQuery(String.format("SELECT * FROM %s", tableName));
 
             } else
             {
@@ -283,7 +284,7 @@ public class DB
      */
     private String prepareQuery()
     {
-        bindAttribs.entrySet().stream().forEach(e -> queryString = queryString.replace(":" + e.getKey(), "'" + e.getValue() + "'"));
+        bindAttribs.forEach((key, value) -> queryString = queryString.replace(":" + key, "'" + value + "'"));
         return queryString;
     }
 
@@ -342,9 +343,10 @@ public class DB
      *
      * @return String
      */
+    @SuppressWarnings("unused")
     public String getInJson()
     {
-        return toJson(get().toArray(new DBRow[get().size()]));
+        return toJson(get().toArray(new DBRow[0]));
     }
 
 
@@ -358,9 +360,8 @@ public class DB
     {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{\"rows\":[");
-        List<DBRow> dbRows = new ArrayList<>();
-        dbRows.addAll(Arrays.asList(rowsToConvert));
-        dbRows.stream().forEach(e -> {
+        List<DBRow> dbRows = new ArrayList<>(Arrays.asList(rowsToConvert));
+        dbRows.forEach(e -> {
             stringBuilder.append(e.toJsonString());
             int index = dbRows.indexOf(e);
             if (!(index == dbRows.size() - 1))
@@ -393,6 +394,7 @@ public class DB
      *
      * @return String
      */
+    @SuppressWarnings("unused")
     public String firstInJson()
     {
         return toJson(first());
@@ -421,6 +423,7 @@ public class DB
      *
      * @return String
      */
+    @SuppressWarnings("unused")
     public String lastInJson()
     {
         return toJson(last());
@@ -437,7 +440,7 @@ public class DB
     {
         Collection<DBRow> rows = get();
         List<Model> models = new ArrayList<>();
-        rows.stream().forEach(e -> {
+        rows.forEach(e -> {
             Model model = new Gson().fromJson(e.toJsonString(), modelClass);
             models.add(model);
         });
@@ -463,6 +466,7 @@ public class DB
      *
      * @return int
      */
+    @SuppressWarnings("unused")
     public int count()
     {
         return get().size();
@@ -474,6 +478,7 @@ public class DB
      *
      * @return Collection
      */
+    @SuppressWarnings("unused")
     public Collection<String> getTableColumns()
     {
         List<String> names = new ArrayList<>();
@@ -550,6 +555,7 @@ public class DB
      * @param json - The JSON String.
      * @return DB
      */
+    @SuppressWarnings("UnusedReturnValue")
     public DB insert(String json)
     {
         Type type = new TypeToken<Map<String, String>>()
@@ -568,7 +574,7 @@ public class DB
     private void executeInsert(Set<String> columns, Set<Map.Entry<String, String>> toInsert)
     {
         queryString = "INSERT INTO " + tableName + " (";
-        columns.stream().forEach(e -> {
+        columns.forEach(e -> {
             int index = getIndex(columns, e);
             if (index == columns.size() - 1)
             {
@@ -579,7 +585,7 @@ public class DB
             }
         });
 
-        toInsert.stream().forEach(e -> {
+        toInsert.forEach(e -> {
             int index = getIndex(toInsert, e);
             String random = RandomStringUtils.randomAlphanumeric(26);
             if (index == toInsert.size() - 1)
@@ -616,6 +622,7 @@ public class DB
      * @param json - The JSON String.
      * @return String
      */
+    @SuppressWarnings("unused")
     public String insertGetId(String json)
     {
         Type type = new TypeToken<Map<String, String>>()
@@ -651,7 +658,7 @@ public class DB
 
         if (whereCount == 1)
         {
-            updateMap.entrySet().stream().forEach(e -> {
+            updateMap.entrySet().forEach(e -> {
                 int index = getIndex(updateMap.entrySet(), e);
                 String random = RandomStringUtils.randomAlphanumeric(26);
                 if (index == updateMap.entrySet().size() - 1)
@@ -678,6 +685,7 @@ public class DB
      * @param json - The json string.
      * @return boolean
      */
+    @SuppressWarnings("unused")
     public boolean update(String json)
     {
         Type type = new TypeToken<Map<String, String>>()
@@ -705,6 +713,7 @@ public class DB
      *
      * @return DB
      */
+    @SuppressWarnings("unused")
     public DB orderByID()
     {
         return orderBy("id");
@@ -716,6 +725,7 @@ public class DB
      *
      * @return DB
      */
+    @SuppressWarnings("unused")
     public DB sortAscending()
     {
         queryString = queryString + " ASC";
@@ -727,6 +737,7 @@ public class DB
      *
      * @return DB
      */
+    @SuppressWarnings("unused")
     public DB sortDescending()
     {
         queryString = queryString + " DESC";
@@ -739,6 +750,7 @@ public class DB
      * @param amount - The amount of rows.
      * @return DB
      */
+    @SuppressWarnings("unused")
     public DB take(int amount)
     {
         queryString = queryString + " LIMIT " + amount;
@@ -750,6 +762,7 @@ public class DB
      *
      * @return boolean
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean delete()
     {
         queryString = "DELETE FROM " + tableName;

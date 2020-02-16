@@ -7,6 +7,8 @@ import uk.co.bjdavies.app.db.DB;
 import uk.co.bjdavies.app.db.models.Ignore;
 import uk.co.bjdavies.app.db.models.Models;
 
+import java.util.Objects;
+
 /**
  * BabbleBot, open-source Discord Bot
  * Licence: GPL V3
@@ -46,12 +48,12 @@ public class ListenCommand implements Command
     @Override
     public String run(Application application, CommandContext commandContext)
     {
-        if (Models.whereFirst(Ignore.class, application, "channelID", commandContext.getMessage().getChannel().getStringID()) != null)
+        if (Models.whereFirst(Ignore.class, application, "channelID", Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString()) != null)
         {
-            DB.table("ignores", application).where("channelID", commandContext.getMessage().getChannel().getStringID()).delete();
+            DB.table("ignores", application).where("channelID", Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString()).delete();
         }
 
-        if (Models.whereFirst(Ignore.class, application, "channelID", commandContext.getMessage().getChannel().getStringID()) == null)
+        if (Models.whereFirst(Ignore.class, application, "channelID", Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString()) == null)
         {
             return "I am free! I will start listening on this channel again <3";
         } else

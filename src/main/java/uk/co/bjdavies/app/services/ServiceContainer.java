@@ -109,9 +109,11 @@ public class ServiceContainer
     /**
      * This is a helper method to stop all services running.
      */
-    public void stopAllServices()
+    public boolean stopAllServices()
     {
         services.keySet().stream().forEach(this::stopService);
+        while(!startedThreads.isEmpty()) {};
+        return true;
     }
 
 

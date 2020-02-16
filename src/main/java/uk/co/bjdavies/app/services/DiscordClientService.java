@@ -1,6 +1,6 @@
 package uk.co.bjdavies.app.services;
 
-import sx.blah.discord.util.DiscordException;
+
 import uk.co.bjdavies.app.Application;
 import uk.co.bjdavies.app.discord.DiscordClientFacade;
 
@@ -29,16 +29,9 @@ public class DiscordClientService implements Service
     @Override
     public boolean boot(Application application)
     {
-        try
-        {
             discordClient = new DiscordClientFacade(application.getConfig().getDiscordConfig().getToken(), application);
             application.getBindingContainer().addBinding("DiscordClient", discordClient);
-        } catch (DiscordException e)
-        {
-            System.out.println(e.getMessage());
-            return false;
-        }
-        return true;
+            return true;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package uk.co.bjdavies.app.crypt;
 
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.UnsupportedEncodingException;

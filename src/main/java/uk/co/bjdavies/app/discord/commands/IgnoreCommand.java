@@ -7,6 +7,8 @@ import uk.co.bjdavies.app.db.DB;
 import uk.co.bjdavies.app.db.models.Ignore;
 import uk.co.bjdavies.app.db.models.Models;
 
+import java.util.Objects;
+
 /**
  * BabbleBot, open-source Discord Bot
  * Licence: GPL V3
@@ -46,12 +48,12 @@ public class IgnoreCommand implements Command
     @Override
     public String run(Application application, CommandContext commandContext)
     {
-        if (Models.whereFirst(Ignore.class, application, "channelID", commandContext.getMessage().getChannel().getStringID()) == null)
+        if (Models.whereFirst(Ignore.class, application, "channelID", Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString()) == null)
         {
-            DB.table("ignores", application).insert("{'guildID': '" + commandContext.getMessage().getGuild().getStringID() + "','channelID': '" + commandContext.getMessage().getChannel().getStringID() + "','ignoredBy':'" + commandContext.getMessage().getAuthor().getStringID() + "'}");
+            DB.table("ignores", application).insert("{'guildID': '" + Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString() + "','channelID': '" + Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString() + "','ignoredBy':'" + Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString() + "'}");
         }
 
-        if (Models.whereFirst(Ignore.class, application, "channelID", commandContext.getMessage().getChannel().getStringID()) != null)
+        if (Models.whereFirst(Ignore.class, application, "channelID", Objects.requireNonNull(commandContext.getMessage().getChannel().block()).getId().asString()) != null)
         {
             return "I will stop listening for commands on this channel :) use !listen for me to start listening to again.";
         } else

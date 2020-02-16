@@ -6,12 +6,12 @@
 
     <groupId>uk.co.bjdavies.babblebot</groupId>
     <artifactId>BabbleBot3.0-Server</artifactId>
-    <version>1.1</version>
+    <version>0.0.1-alpha</version>
 
     <repositories>
         <repository> <!-- This repo fixes issues with transitive dependencies -->
             <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.github.austinv11</groupId>
             <artifactId>Discord4J</artifactId>
-            <version>2.9.3</version>
+            <version>3.0.12</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -78,6 +78,11 @@
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
         </dependency>
     </dependencies>
 
@@ -112,18 +117,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
                 <executions>
@@ -135,43 +128,16 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>uk.co.bjdavies.BabbleBot</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                        <descriptorRef>jar-for-api</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-my-jar-with-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-bendavies99</id>
+            <name>bendavies99-BabbleBot3.0</name>
+            <url>https://api.bintray.com/maven/bendavies99/BabbleBot3.0/BabbleBot-Server/;publish=1</url>
+        </repository>
+    </distributionManagement>
 
 </project>
